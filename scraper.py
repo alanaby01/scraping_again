@@ -59,7 +59,7 @@ def parse(name_box):
             date_index = (date_index + 1) % 6
 for i in range(0, 10, 1):
 
-    page_name = "../downloads/2022-11-10/usage_page-" + str(i) + ".html"
+    page_name = "./downloads/2022-11-10/usage_page-" + str(i) + ".html"
     file = open(page_name)
     html_doc = file.read()
     file.close()
