@@ -55,15 +55,11 @@ def parse(name_box):
             #print(json_["data"]["attributes"]["field_number_of_sites"] )
             #print(json_["data"]["attributes"]["field_usage_date"])
             json_object = json.dumps(json_, indent = 4) 
-            try:
-                response = requests.post(url_to_POST_, headers=headers, data=json_object)
-            except: 
-                continue
-            print(response)
+            response = requests.post(url_to_POST_, headers=headers, data=json_object)
             date_index = (date_index + 1) % 6
 for i in range(0, 10, 1):
 
-    page_name = "./downloads/2022-11-10/usage_page-" + str(i) + ".html"
+    page_name = "../downloads/2022-11-10/usage_page-" + str(i) + ".html"
     file = open(page_name)
     html_doc = file.read()
     file.close()
