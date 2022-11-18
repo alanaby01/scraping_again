@@ -1,10 +1,10 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
-import multiprocessing
+from multiprocessing import Pool
 import requests
 import json
 import os
-import time
+
 # POST_PROJECT : URL to which POST is made to create the Project Content.
 # POST_PROJECT_USAGE : URL to which POST is made to create the Project Usage Content.
 # GET_PROJECT : URL to which GET request is made to get UUID's of project entities.
@@ -54,13 +54,13 @@ def parse(name_box, date_array):
         # print(json_["data"]["attributes"]["title"])
         # print(json_["data"]["attributes"]["field_project_code"])
         # print(json_["data"]["attributes"]["field_project_url"])
-        json_object = json.dumps(payload_project, indent = 4) 
+        json_object = json.dumps(payload_project, indent=4) 
         response = requests.post(POST_PROJECT, headers=POST_HEADERS, data=json_object)
         print(response)
-        usage_box = name.findAll('td',{'class':'project-usage-numbers'})
+        usage_box = name.findAll('td', {'class':'project-usage-numbers'})
         uuid = get_uuid(code)
         for usage in usage_box:
-            number_of_sites = usage.text.replace(',',"")
+            number_of_sites = usage.text.replace(',', "")
             payload_project_usage = {
             "data" : {
                 "type": "node--project_usage",
@@ -79,8 +79,8 @@ def parse(name_box, date_array):
                     }
                 }
             }
-            title_project_usage = code + "-" + date_array[date_index]
-            payload_project_usage["data"]["attributes"]["title"] = title_project_usage
+            project_usage_title = code + "-" + date_array[date_index]
+            payload_project_usage["data"]["attributes"]["title"] = project_usage_title
             payload_project_usage["data"]["attributes"]["field_number_of_sites"] = number_of_sites
             payload_project_usage["data"]["attributes"]["field_usage_date"] =  date_array[date_index]
             #payload_project_usage["data"]["attributes"]["field_project_code"] = code
@@ -89,22 +89,32 @@ def parse(name_box, date_array):
             # print(json_["data"]["attributes"]["title"] )
             # print(json_["data"]["attributes"]["field_number_of_sites"] )
             # print(json_["data"]["attributes"]["field_usage_date"])
-            json_object = json.dumps(payload_project_usage, indent = 4) 
+            json_object = json.dumps(payload_project_usage, indent=4) 
             response = requests.post(POST_PROJECT_USAGE, headers=POST_HEADERS, data=json_object)
             print(response)
+            #To loop the date_array
             date_index = (date_index + 1) % 6
-
-for filename in sorted(os.listdir(DIRECTORY)):
+def main(filename):
     date_array = []
     pathname = os.path.join(DIRECTORY, filename)
     file = open(pathname)
     html_doc = file.read()
     file.close()
+
     soup = BeautifulSoup(html_doc, "html.parser")
+
     date_box = soup.findAll('th', {'class': 'project-usage-numbers'})
     for date in date_box:
         date_array.append(str(datetime.strptime(date.text, "%b %d, %Y").strftime("%Y-%m-%d")))
+
     name_box = soup.findAll('tr', {'class': 'odd'})
     parse(name_box, date_array)
     name_box = soup.findAll('tr', {'class': 'even'})
     parse(name_box, date_array)
+
+if __name__ == '__main__':
+    filename_array = []
+    for filename in sorted(os.listdir(DIRECTORY)):
+        filename_array.append(filename)
+    with Pool(processes=10) as pool:
+        pool.map(main, filename_array)
