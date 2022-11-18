@@ -1,0 +1,11 @@
+{
+    "data": {
+        "type": "node--project",
+        "attributes": {
+            "title":  "",
+            "field_project_code": "",
+            "field_project_name": "",
+            "field_project_url": ""
+        }
+    }
+}

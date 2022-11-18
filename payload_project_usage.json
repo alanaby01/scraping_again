@@ -1,0 +1,18 @@
+{
+    "data" : {
+        "type": "node--project_usage",
+        "attributes": {
+            "title": "",
+            "field_number_of_sites": "",
+            "field_usage_date": ""
+        },
+        "relationships": {
+            "field_usage_project_code": {
+                "data": {
+                    "type": "node--project",
+                    "id": ""
+                }
+            }
+        }
+    }
+}
